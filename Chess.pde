@@ -1,4 +1,4 @@
-// Chess by Palmer Paul and Josh Verscheslieser
+// Chess by Palmer Paul and Josh Verschesleiser
 
 /* Piece IDs
  Black  White  Piece
@@ -11,48 +11,50 @@
  0      0      Blank
  */
 
-int[] board = new int[64];
+int[][] board = new int[8][8];
 PImage[] reps = new PImage[12];
-int moving_id, moving_loc;
+int[] moving = new int[3];
 boolean turn = true;
 
 void setup() {
   size(480, 480);
   noStroke();
 
-  reps[0] = loadImage("Black_Rook.png");
-  reps[1] = loadImage("Black_Knight.png");
-  reps[2] = loadImage("Black_Bishop.png");
-  reps[3] = loadImage("Black_Queen.png");
-  reps[4] = loadImage("Black_King.png");
-  reps[5] = loadImage("Black_Pawn.png");
-  reps[6] = loadImage("White_Rook.png");
-  reps[7] = loadImage("White_Knight.png");
-  reps[8] = loadImage("White_Bishop.png");
-  reps[9] = loadImage("White_Queen.png");
-  reps[10] = loadImage("White_King.png");
-  reps[11] = loadImage("White_Pawn.png");
+  reps[0] = loadImage("Black_Rook1.png");
+  reps[1] = loadImage("Black_Knight1.png");
+  reps[2] = loadImage("Black_Bishop1.png");
+  reps[3] = loadImage("Black_Queen1.png");
+  reps[4] = loadImage("Black_King1.png");
+  reps[5] = loadImage("Black_Pawn1.png");
+  reps[6] = loadImage("White_Rook1.png");
+  reps[7] = loadImage("White_Knight1.png");
+  reps[8] = loadImage("White_Bishop1.png");
+  reps[9] = loadImage("White_Queen1.png");
+  reps[10] = loadImage("White_King1.png");
+  reps[11] = loadImage("White_Pawn1.png");
 
   // Makes pieces
   for (int i = 0; i < 8; i++) {
-    board[i] = i+1;
-    board[i+8] = 6;
-    board[i+48] = 12;
-    board[i+56] = i+7;
+    board[i][0] = i+1;
+    board[i][1] = 6;
+    board[i][6] = 12;
+    board[i][7] = i+7;
   }
-  board[5] = 3;
-  board[6] = 2;
-  board[7] = 1;
-  board[61] = 9;
-  board[62] = 8;
-  board[63] = 7;
+  board[5][0] = 3;
+  board[6][0] = 2;
+  board[7][0] = 1;
+  board[5][7] = 9;
+  board[6][7] = 8;
+  board[7][7] = 7;
 
   drawBoard(#222222, #888888);
 
-  for (int i = 0; i < board.length; i++) {
-    int id = board[i];
-    if (id != 0) {
-      image(reps[id-1], (i%8)*width/8 + width/48, (i/8)*height/8 + height/48, width/12, height/12);
+  for (int c = 0; c < board.length; c++) {
+    for (int r = 0; r < board[c].length; r++) {
+      int id = board[c][r];
+      if (id != 0) {
+        image(reps[id-1], c*width/8 + width/48, r*height/8 + height/48, width/12, height/12);
+      }
     }
   }
 }
@@ -61,27 +63,30 @@ void draw() {
 }
 
 void mousePressed() {
-  moving_loc = 8*(8*mouseY/height) + 8*mouseX/width;
-  moving_id = board[moving_loc];
-  if ((turn && moving_id < 7) || (!turn && moving_id > 6)) {
-    moving_id = 0;
+  moving[0] = constrain(8*mouseX/width, 0, 7);
+  moving[1] = constrain(8*mouseY/height, 0, 7);
+  moving[2] = board[moving[0]][moving[1]];
+  if ((turn && moving[2] < 7) || (!turn && moving[2] > 6)) {
+    moving[2] = 0;
   }
 }
 
 void mouseReleased() {
-  int mouse_loc = 8*(8*mouseY/height) + 8*mouseX/width;
-  if (moving_id != 0 && moving_loc != mouse_loc) {
-    board[mouse_loc] = moving_id;
-    board[moving_loc] = 0;
+  int[] mouse_loc = { constrain(8*mouseX/width, 0, 7), constrain(8*mouseY/height, 0, 7) };
+  if (moving[2] != 0 && (moving[0] != mouse_loc[0] || moving[1] != mouse_loc[1])) {
+    board[mouse_loc[0]][mouse_loc[1]] = moving[2];
+    board[moving[0]][moving[1]] = 0;
     turn = !turn;
   }
 
   drawBoard(#222222, #888888);
-
-  for (int i = 0; i < board.length; i++) {
-    int id = board[i];
-    if (id != 0) {
-      image(reps[id-1], (i%8)*width/8 + width/48, (i/8)*height/8 + height/48, width/12, height/12);
+  
+  for (int c = 0; c < board.length; c++) {
+    for (int r = 0; r < board[c].length; r++) {
+      int id = board[c][r];
+      if (id != 0) {
+        image(reps[id-1], c*width/8 + width/48, r*height/8 + height/48, width/12, height/12);
+      }
     }
   }
 }
