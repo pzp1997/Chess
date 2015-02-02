@@ -1,4 +1,10 @@
-// Chess by Palmer Paul and Josh Verschesleiser
+// Chess by Palmer Paul and Josh Verscheslieser
+
+/* TODO
+   * Finish writing piece restrictions
+   * Detect for checkmate/check
+   * Stop pieces from jumping over others (except for Knight)
+ */
 
 /* Piece IDs
  Black  White  Piece
@@ -48,15 +54,7 @@ void setup() {
   board[7][7] = 7;
 
   drawBoard(#222222, #888888);
-
-  for (int c = 0; c < board.length; c++) {
-    for (int r = 0; r < board[c].length; r++) {
-      int id = board[c][r];
-      if (id != 0) {
-        image(reps[id-1], c*width/8 + width/48, r*height/8 + height/48, width/12, height/12);
-      }
-    }
-  }
+  drawPieces();
 }
 
 void draw() {
@@ -72,22 +70,56 @@ void mousePressed() {
 }
 
 void mouseReleased() {
-  int[] mouse_loc = { constrain(8*mouseX/width, 0, 7), constrain(8*mouseY/height, 0, 7) };
-  if (moving[2] != 0 && (moving[0] != mouse_loc[0] || moving[1] != mouse_loc[1])) {
+  int[] mouse_loc = { 
+    constrain(8*mouseX/width, 0, 7), constrain(8*mouseY/height, 0, 7)
+    };
+    boolean valid = false;
+  switch(moving[2]) {
+    case 1:
+    case 7:
+      // Rook
+      if (moving[0] - mouse_loc[0] == 0 || moving[1] - mouse_loc[1] == 0) {
+        valid = true;
+      }
+      break;
+    case 2:
+    case 8:
+      // Knight
+      break;
+    case 3:
+    case 9:
+      // Bishop
+      if (abs(moving[0] - mouse_loc[0]) == abs(moving[1] - mouse_loc[1])) {
+        valid = true;
+      }
+      break;
+    case 4:
+    case 10:
+      // Queen
+      break;
+    case 5:
+    case 11:
+      // King
+      if (abs(moving[0] - mouse_loc[0]) < 2 && abs(moving[1] - mouse_loc[1]) < 2) {
+        valid = true;
+      }
+      break;
+    case 6:
+    case 12:
+      // Pawn
+        // TODO: diagnol to take and 2 on first move
+      if (mouse_loc[0] - moving[0] == 0 && ((turn && moving[1] - mouse_loc[1] == 1) || (!turn && mouse_loc[1] - moving[1] == 1))) {
+        valid = true;
+      }
+      break;
+  }
+  if (valid && (moving[0] != mouse_loc[0] || moving[1] != mouse_loc[1])) {
     board[mouse_loc[0]][mouse_loc[1]] = moving[2];
     board[moving[0]][moving[1]] = 0;
     turn = !turn;
-  }
 
-  drawBoard(#222222, #888888);
-  
-  for (int c = 0; c < board.length; c++) {
-    for (int r = 0; r < board[c].length; r++) {
-      int id = board[c][r];
-      if (id != 0) {
-        image(reps[id-1], c*width/8 + width/48, r*height/8 + height/48, width/12, height/12);
-      }
-    }
+    drawBoard(#222222, #888888);
+    drawPieces();
   }
 }
 
@@ -104,6 +136,17 @@ void drawBoard(color c1, color c2) {
         rect(w+height/8, h, width/8, height/8);
       }
       tileShift = !tileShift;
+    }
+  }
+}
+
+void drawPieces() {
+  for (int c = 0; c < board.length; c++) {
+    for (int r = 0; r < board[c].length; r++) {
+      int id = board[c][r];
+      if (id != 0) {
+        image(reps[id-1], c*width/8 + width/48, r*height/8 + height/48, width/12, height/12);
+      }
     }
   }
 }
