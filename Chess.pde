@@ -70,15 +70,15 @@ void mousePressed() {
 }
 
 void mouseReleased() {
-  int[] mouse_loc = { 
-    constrain(8*mouseX/width, 0, 7), constrain(8*mouseY/height, 0, 7)
-    };
-    boolean valid = false;
+  int[] mouse_loc = { constrain(8*mouseX/width, 0, 7), constrain(8*mouseY/height, 0, 7) };
+  int dc = abs(moving[0] - mouse_loc[0]);
+  int dr = abs(moving[1] - mouse_loc[1]);
+  boolean valid = false;
   switch(moving[2]) {
     case 1:
     case 7:
       // Rook
-      if (moving[0] - mouse_loc[0] == 0 || moving[1] - mouse_loc[1] == 0) {
+      if (dc == 0 || dr == 0) {
         valid = true;
       }
       break;
@@ -89,18 +89,21 @@ void mouseReleased() {
     case 3:
     case 9:
       // Bishop
-      if (abs(moving[0] - mouse_loc[0]) == abs(moving[1] - mouse_loc[1])) {
+      if (dc == dr) {
         valid = true;
       }
       break;
     case 4:
     case 10:
       // Queen
+      if (dc == dr || (dc == 0 || dr == 0)) {
+        valid = true;
+      }
       break;
     case 5:
     case 11:
       // King
-      if (abs(moving[0] - mouse_loc[0]) < 2 && abs(moving[1] - mouse_loc[1]) < 2) {
+      if (dc < 2 && dr < 2) {
         valid = true;
       }
       break;
@@ -108,12 +111,12 @@ void mouseReleased() {
     case 12:
       // Pawn
         // TODO: diagnol to take and 2 on first move
-      if (mouse_loc[0] - moving[0] == 0 && ((turn && moving[1] - mouse_loc[1] == 1) || (!turn && mouse_loc[1] - moving[1] == 1))) {
+      if (dc == 0 && ((turn && moving[1] - mouse_loc[1] == 1) || (!turn && mouse_loc[1] - moving[1] == 1))) {
         valid = true;
       }
       break;
   }
-  if (valid && (moving[0] != mouse_loc[0] || moving[1] != mouse_loc[1])) {
+  if (valid && (dc != 0 || dr != 0)) {
     board[mouse_loc[0]][mouse_loc[1]] = moving[2];
     board[moving[0]][moving[1]] = 0;
     turn = !turn;
