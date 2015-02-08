@@ -1,7 +1,7 @@
-// Chess by Palmer Paul and Josh Verscheslieser
+// Chess by Palmer Paul and Josh Verschleiser
 
 /* TODO
-   * Finish writing piece restrictions
+   * Write special cases for Pawn
    * Detect for checkmate/check
    * Stop pieces from jumping over others (except for Knight)
  */
@@ -85,6 +85,9 @@ void mouseReleased() {
     case 2:
     case 8:
       // Knight
+      if ((dc == 2 && dr == 1) || (dc == 1 && dr == 2)) {
+        valid = true;
+      }
       break;
     case 3:
     case 9:
